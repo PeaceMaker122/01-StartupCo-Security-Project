@@ -1,2 +1,1 @@
-# StartupCo-Security-Project-1
-StartupCo Security Project
+The current problem of StartupCo is that they initially moved fast creating their infrastructure to get the product out. Now that the product's out, we need to go back and properly implement all the security around their infrastructure, users, permissions, and best practices. 
