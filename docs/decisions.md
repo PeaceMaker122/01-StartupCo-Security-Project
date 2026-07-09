@@ -18,4 +18,15 @@ No specific Security Groups mentioned. Default security groups will be used.
 
 1. Create the current Architecture:
 
-I'm creating the current infrastructure in a diagram to have a visual idea of what it looks like, to spot all the flaws and risks present.
+- I created the current infrastructure in a diagram to have a visual idea of what it looks like, to spot all the flaws and risks present.
+
+- I prevented myself from making any corrections on the current infrastructure to emphasize the current bad situation and enable myself to fix it later.
+
+
+2. Secure the Root Account
+
+- I enabled MFA on the root account as a mandatory step.
+
+- I used a dedicated, encrypted password manager to store the root account credentials securely, and made sure that only the absolutely necessary individuals have access to these credentials to emphasize the principle of least privilege.
+
+- The root account has unrestricted access to all the features of your AWS account, and leaving it unsecured can compromise your entire account.
