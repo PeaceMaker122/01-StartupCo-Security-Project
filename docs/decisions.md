@@ -1,7 +1,4 @@
 
-How do I create a strong password policy? 
-
-
 # Current infrastructure decisions:
 
 No app or web instances mentioned separately; only general EC2 instances running their app. I decided to implement 2 App servers accessed directly by the public via IP addresses. No ALB mentioned. 
@@ -29,4 +26,15 @@ No specific Security Groups mentioned. Default security groups will be used.
 
 - I used a dedicated, encrypted password manager to store the root account credentials securely, and made sure that only the absolutely necessary individuals have access to these credentials to emphasize the principle of least privilege.
 
+- Access keys are only attached to IAM users instead of the root user to improve security.
+
 - The root account has unrestricted access to all the features of your AWS account, and leaving it unsecured can compromise your entire account.
+
+
+3. Create IAM Users and Groups
+
+- Creating IAM users allow the separation of permissions per individual user with their responsibilities. 
+
+- Creating Groups allows permissions to be applied to a group of users that operate on the same team and have the same responsibilities and should inherit the same limitations aswell.
+
+- Not doing this leaves the AWS environment open for any user to do any actions. For example, developers deleting production resources.
