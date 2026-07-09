@@ -33,8 +33,33 @@ No specific Security Groups mentioned. Default security groups will be used.
 
 3. Create IAM Users and Groups
 
-- Creating IAM users allow the separation of permissions per individual user with their responsibilities. 
+**What I did:**
+- Created individual IAM users for each employee, removing shared root account access.
+- Created IAM groups aligned to each team (Developers, Operations, Finance, Analysts) and assigned users to their respective groups.
+- Attached permissions policies to each group based on the access requirements defined in the project brief.
 
-- Creating Groups allows permissions to be applied to a group of users that operate on the same team and have the same responsibilities and should inherit the same limitations aswell.
+**Why I did it:**
+- Individual IAM users enable the separation of permissions per person, scoped to their responsibilities and team.
+- Assigning permissions at the group level rather than the user level makes access management scalable - changes to a group's permissions automatically apply to all members.
+- This enforces the principle of least privilege, ensuring each user can only access what they need to do their job.
 
-- Not doing this leaves the AWS environment open for any user to do any actions. For example, developers deleting production resources.
+**What I rejected:**
+- Continuing to use the root account for daily operations - the root account has unrestricted access to everything in the AWS account and should not be used for routine tasks.
+- Assigning permissions directly to individual users - this becomes unmanageable at scale and makes auditing access significantly harder.
+
+
+4. Set Up Security Baseline
+
+**What is this task actually solving:**
+Standard security-based practices to ensure users are not compromised and the principle of least privilege is implemented.
+
+**What I did:**
+I created a policy that forces all IAM users to enable MFA on their account before they can take any action in AWS, including any actions on resources. 
+
+I then outline the steps on how a user enables MFA on their account.
+
+**Why I did it:**
+If this is not done, then IAM users can be easily compromised, and their permissions can be abused, leading to the AWS environment security being compromised.
+
+**What I rejected:**
+Leaving IAM users without MFA goes against security-based practices and compromises the users' permissions, which can be abused and misused.
