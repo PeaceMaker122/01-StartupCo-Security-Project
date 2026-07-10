@@ -63,3 +63,20 @@ If this is not done, then IAM users can be easily compromised, and their permiss
 
 **What I rejected:**
 Leaving IAM users without MFA goes against security-based practices and compromises the users' permissions, which can be abused and misused.
+
+
+5. Implement User Group Permissions
+
+**What is this task actually solving:**
+It's more scalable and easier to manage when adding permissions at the group level instead of the user level, which then applies to all the members under the group. This ensures that all group users can only access what they need to fulfill their duties.
+
+**What I did:**
+I added the correct and relevant permission policies under each user group (developers, operations, finance, and data analysis).
+
+A screenshot is added for every group to showcase the correct permissions as evidence.
+
+**Why I did it:**
+These permissions enforce the principle of least privilege for every user under the relevant group to ensure that users can only fulfill their duties and increase the security of the account.
+
+**What I rejected:**
+Not adding permissions under the group will result in the users not being able to do anything, because AWS denies everything by default. Also, I chose not to apply permissions to individual users, as it's not scalable and manageable.
