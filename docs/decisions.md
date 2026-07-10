@@ -1,82 +1,114 @@
+# Decisions & Reasoning
 
-# Current infrastructure decisions:
+---
 
-No app or web instances mentioned separately; only general EC2 instances running their app. I decided to implement 2 App servers accessed directly by the public via IP addresses. No ALB mentioned. 
+## Assumptions — Current Infrastructure
 
-Only one RDS database is mentioned for user info. I'm assuming it's in a single AZ with no High-Availability or read replicas.
+Before starting the tasks, the following assumptions were made based on the project brief:
 
-Several development and production environments are mentioned, but I assume this is just an operational/logical discipline separation, not an infrastructure separation.
+- No app or web instances were mentioned separately, only general EC2 instances running the application. I decided to implement 2 app servers accessed directly by the public via IP addresses. No ALB was mentioned.
+- Only one RDS database is mentioned for user information. I am assuming it is in a single AZ with no high availability or read replicas.
+- Several development and production environments are mentioned, but I am assuming this is an operational/logical separation, not an infrastructure separation.
+- No specific security groups are mentioned. Default security groups will be used.
 
-No specific Security Groups mentioned. Default security groups will be used.
+---
 
+## Tasks
 
+### 1. Create the Current Architecture
 
-# Tasks:
+**What this task is solving**
 
-1. Create the current Architecture:
+Establishing a clear visual representation of the current infrastructure to understand what exists, identify security flaws, and create a baseline to work from before making any changes.
 
-- I created the current infrastructure in a diagram to have a visual idea of what it looks like, to spot all the flaws and risks present.
+**What I did**
+- Created the current infrastructure as a diagram to get a visual overview, identify flaws, and spot security risks.
+- No corrections were made to the current infrastructure, the goal was to accurately represent the existing situation before addressing it.
 
-- I prevented myself from making any corrections on the current infrastructure to emphasize the current bad situation and enable myself to fix it later.
+**Why I did it**
+- Without a clear picture of the current state, it is difficult to identify risks or plan improvements. The diagram serves as the starting point for all subsequent tasks.
 
+**What I rejected**
+- Making corrections to the infrastructure at this stage, doing so would misrepresent the actual current state and undermine the purpose of the diagram.
 
-2. Secure the Root Account
+---
 
-- I enabled MFA on the root account as a mandatory step.
+### 2. Secure the Root Account
 
-- I used a dedicated, encrypted password manager to store the root account credentials securely, and made sure that only the absolutely necessary individuals have access to these credentials to emphasize the principle of least privilege.
+**What this task is solving**
 
-- Access keys are only attached to IAM users instead of the root user to improve security.
+The root account has unrestricted access to all AWS features and services. Leaving it unsecured or using it for daily operations poses a critical security risk that could lead to full account compromise.
 
-- The root account has unrestricted access to all the features of your AWS account, and leaving it unsecured can compromise your entire account.
+**What I did**
+- Enabled MFA on the root account as a mandatory first step.
+- Stored root credentials in a dedicated, encrypted password manager, with access limited to only those who absolutely require it - in line with the principle of least privilege.
+- Ensured access keys are only attached to IAM users, not the root user.
 
+**Why I did it**
+- MFA adds a second layer of protection, meaning stolen credentials alone are not enough to access the account.
+- Restricting who can access the root credentials reduces the risk of accidental or malicious misuse.
+- Avoiding root access keys eliminates the risk of long-lived, highly privileged credentials being exposed.
 
-3. Create IAM Users and Groups
+**What I rejected**
+- Continuing to use the root account for daily operations, its unrestricted access makes any mistake or compromise catastrophic.
+- Skipping MFA on the root account, this is a non-negotiable security baseline for any AWS account.
 
-**What I did:**
-- Created individual IAM users for each employee, removing shared root account access.
+---
+
+### 3. Create IAM Users and Groups
+
+**What this task is solving**
+
+Replacing the shared root account with individual IAM users and structured groups ensures that each person only has the access they need, making the environment more secure and easier to manage.
+
+**What I did**
+- Created individual IAM users for each employee, removing the shared root account access.
 - Created IAM groups aligned to each team (Developers, Operations, Finance, Analysts) and assigned users to their respective groups.
-- Attached permissions policies to each group based on the access requirements defined in the project brief.
+- Attached permission policies to each group based on the access requirements defined in the project brief.
 
-**Why I did it:**
-- Individual IAM users enable the separation of permissions per person, scoped to their responsibilities and team.
-- Assigning permissions at the group level rather than the user level makes access management scalable - changes to a group's permissions automatically apply to all members.
-- This enforces the principle of least privilege, ensuring each user can only access what they need to do their job.
+**Why I did it**
+- Individual IAM users allow permissions to be scoped per person, based on their role and responsibilities.
+- Managing permissions at the group level is scalable, changes to a group automatically apply to all its members.
+- This enforces the principle of least privilege, ensuring each user can only access what they need.
 
-**What I rejected:**
-- Continuing to use the root account for daily operations - the root account has unrestricted access to everything in the AWS account and should not be used for routine tasks.
-- Assigning permissions directly to individual users - this becomes unmanageable at scale and makes auditing access significantly harder.
+**What I rejected**
+- Continuing to use the root account for daily operations. The root account has unrestricted access to everything and should not be used for routine tasks.
+- Assigning permissions directly to individual users. This becomes unmanageable at scale and makes auditing significantly harder.
 
+---
 
-4. Set Up Security Baseline
+### 4. Set Up Security Baseline
 
-**What is this task actually solving:**
-Standard security-based practices to ensure users are not compromised and the principle of least privilege is implemented.
+**What this task is solving**
 
-**What I did:**
-I created a JSON policy that forces all IAM users to enable MFA on their account before they can take any action in AWS, including any actions on resources. The JSON policy is added as a file under the IaC folder as well as a screenshot of the created policy in the console.
+Implementing standard security practices to ensure IAM users are not easily compromised and that the principle of least privilege is enforced.
 
-I then outlined where a user enables MFA on their account. This screenshot was also added. 
+**What I did**
+- Created a JSON policy that forces all IAM users to enable MFA before they can perform any action in AWS, including actions on resources.
+- The JSON policy is saved under the IaC folder, with a screenshot of the created policy in the console also included.
+- Added a screenshot showing where a user enables MFA on their account. It should be done for every single user. 
 
-**Why I did it:**
-If this is not done, then IAM users can be easily compromised, and their permissions can be abused, leading to the AWS environment security being compromised.
+**Why I did it**
+- Without MFA, IAM users can easily be compromised. If credentials are stolen, an attacker gains full access to that user's permissions, potentially exposing the entire AWS environment.
 
-**What I rejected:**
-Leaving IAM users without MFA goes against security-based practices and compromises the users' permissions, which can be abused and misused.
+**What I rejected**
+- Leaving IAM users without MFA goes against security best practices and leaves user permissions exposed to abuse and misuse.
 
+---
 
-5. Implement User Group Permissions
+### 5. Implement User Group Permissions
 
-**What is this task actually solving:**
-It's more scalable and easier to manage when adding permissions at the group level instead of the user level, which then applies to all the members under the group. This ensures that all group users can only access what they need to fulfill their duties.
+**What this task is solving**
 
-**What I did:**
-I added the correct and relevant permission policies under each user group (developers, operations, finance, and data analysis).
+Assigning permissions at the group level rather than the user level makes access management more scalable and easier to maintain, while ensuring each user can only access what they need to fulfil their role.
 
-A screenshot is added for every group to showcase the correct permissions as evidence.
+**What I did**
+- Added the correct permission policies to each IAM group (Developers, Operations, Finance, Data Analysts).
+- Added a screenshot for each group as evidence of the correct permissions being applied.
 
-**Why I did it:**
-These permissions enforce the principle of least privilege for every user under the relevant group to ensure that users can only fulfill their duties and increase the security of the account.
+**Why I did it**
+- Group-level permissions enforce the principle of least privilege across all users in a group, ensuring access is limited to what is needed to fulfil their duties.
 
-**What I rejected:**
-Not adding permissions under the group will result in the users not being able to do anything, because AWS denies everything by default. Also, I chose not to apply permissions to individual users, as it's not scalable and manageable.
+**What I rejected**
+- Not adding permissions to groups. This would result in users being unable to do anything, since AWS denies all actions by default.
+- Applying permissions directly to individual users. This approach does not scale and makes access management significantly harder to maintain and audit.
