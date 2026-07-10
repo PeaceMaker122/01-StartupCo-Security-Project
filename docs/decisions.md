@@ -54,9 +54,9 @@ No specific Security Groups mentioned. Default security groups will be used.
 Standard security-based practices to ensure users are not compromised and the principle of least privilege is implemented.
 
 **What I did:**
-I created a policy that forces all IAM users to enable MFA on their account before they can take any action in AWS, including any actions on resources. 
+I created a JSON policy that forces all IAM users to enable MFA on their account before they can take any action in AWS, including any actions on resources. The JSON policy is added as a file under the IaC folder as well as a screenshot of the created policy in the console.
 
-I then outline the steps on how a user enables MFA on their account.
+I then outlined where a user enables MFA on their account. This screenshot was also added. 
 
 **Why I did it:**
 If this is not done, then IAM users can be easily compromised, and their permissions can be abused, leading to the AWS environment security being compromised.
