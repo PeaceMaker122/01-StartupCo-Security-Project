@@ -105,9 +105,11 @@ Assigning permissions at the group level rather than the user level makes access
 **What I did**
 - Added the correct permission policies to each IAM group (Developers, Operations, Finance, Data Analysts).
 - Added a screenshot for each group as evidence of the correct permissions being applied.
+- Ensured that IAM user access to billing is activated in the root account settings for billing-related permissions.
 
 **Why I did it**
 - Group-level permissions enforce the principle of least privilege across all users in a group, ensuring access is limited to what is needed to fulfil their duties.
+- If the billing setting in the root account is disabled, even a correctly permissioned IAM user won't see the billing console.
 
 **What I rejected**
 - Not adding permissions to groups. This would result in users being unable to do anything, since AWS denies all actions by default.
