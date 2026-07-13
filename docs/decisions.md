@@ -114,3 +114,27 @@ Assigning permissions at the group level rather than the user level makes access
 **What I rejected**
 - Not adding permissions to groups. This would result in users being unable to do anything, since AWS denies all actions by default.
 - Applying permissions directly to individual users. This approach does not scale and makes access management significantly harder to maintain and audit.
+
+---
+
+### 6. Recreating the Solution as Infrastructure as Code
+
+**What this task is solving**
+
+Recreating the console-based solution as Infrastructure as Code simplifies it into a repeatable template, making it easy for any team member to implement the same solution without manually clicking through the AWS console. It can be adjusted and modified as needed, making it straightforward to apply at scale.
+
+**What I did**
+- Created four Terraform files to implement the full solution:
+  - `main.tf` - backend and provider configuration, using S3 for remote state storage and DynamoDB for state locking.
+  - `iam_groups.tf` - four IAM groups (Developers, Operations, Finance, Data Analysts) with their respective permission policies attached.
+  - `iam_users.tf` - all ten IAM users created and assigned to their respective groups.
+  - `iam_policies.tf` - custom MFA enforcement policy, attached to all groups so every user inherits it.
+- Updated `.gitignore` to exclude Terraform-generated files that should not be committed, such as state files, provider binaries, and crash logs.
+
+**Why I did it**
+- IaC makes the solution repeatable and consistent. Anyone on the team can apply it without needing to follow manual steps through the console.
+- It prevents solution drift, where manual changes over time cause the actual infrastructure to diverge from the original intent.
+- It reduces the risk of human error that comes with manually configuring resources through the console.
+
+**What I rejected**
+- Relying solely on the console implementation, this requires every team member to manually replicate the solution, which is time-consuming, error-prone, and difficult to audit or version control.
