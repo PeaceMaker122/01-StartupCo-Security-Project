@@ -1,2 +1,21 @@
 # Docs
 docs/project-brief.md
+
+# Terraform
+# State files can contain sensitive data and should never be committed.
+# Remote state is stored in S3 — see backend config in IaC/main.tf.
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+
+# Terraform working directory and provider binaries
+.terraform/
+.terraform.lock.hcl
+
+# Terraform variable files (may contain secrets)
+*.tfvars
+*.tfvars.json
+
+# Terraform crash logs
+crash.log
+crash.*.log
