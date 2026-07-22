@@ -125,10 +125,10 @@ Recreating the console-based solution as Infrastructure as Code simplifies it in
 
 **What I did**
 - Created four Terraform files to implement the full solution:
-  - `main.tf` - backend and provider configuration, using S3 for remote state storage and DynamoDB for state locking.
-  - `iam_groups.tf` - four IAM groups (Developers, Operations, Finance, Data Analysts) with their respective permission policies attached.
-  - `iam_users.tf` - all ten IAM users created and assigned to their respective groups.
-  - `iam_policies.tf` - custom MFA enforcement policy, attached to all groups so every user inherits it.
+  - `main.tf` — backend and provider configuration, using S3 for remote state storage with S3 native locking.
+  - `iam_groups.tf` — four IAM groups (Developers, Operations, Finance, Data Analysts) with their respective permission policies attached.
+  - `iam_users.tf` — all ten IAM users created and assigned to their respective groups.
+  - `iam_policies.tf` — custom MFA enforcement policy, attached to all groups so every user inherits it.
 - Updated `.gitignore` to exclude Terraform-generated files that should not be committed, such as state files, provider binaries, and crash logs.
 
 **Why I did it**
@@ -137,4 +137,5 @@ Recreating the console-based solution as Infrastructure as Code simplifies it in
 - It reduces the risk of human error that comes with manually configuring resources through the console.
 
 **What I rejected**
-- Relying solely on the console implementation, this requires every team member to manually replicate the solution, which is time-consuming, error-prone, and difficult to audit or version control.
+- Relying solely on the console implementation — this requires every team member to manually replicate the solution, which is time-consuming, error-prone, and difficult to audit or version control.
+- Using S3 with DynamoDB for state locking — S3 native locking achieves the same result with less infrastructure overhead, eliminating the need to maintain a separate DynamoDB table. This approach requires Terraform 1.10 or above and S3 bucket versioning to be enabled.

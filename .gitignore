@@ -1,5 +1,6 @@
 # Docs
 docs/project-brief.md
+to do list.md
 
 # Terraform
 # State files can contain sensitive data and should never be committed.
