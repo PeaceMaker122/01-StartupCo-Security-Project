@@ -2,7 +2,7 @@
 
 ---
 
-## Assumptions — Current Infrastructure
+## Assumptions: Current Infrastructure
 
 Before starting the tasks, the following assumptions were made based on the project brief:
 
@@ -74,6 +74,7 @@ Replacing the shared root account with individual IAM users and structured group
 **What I rejected**
 - Continuing to use the root account for daily operations. The root account has unrestricted access to everything and should not be used for routine tasks.
 - Assigning permissions directly to individual users. This becomes unmanageable at scale and makes auditing significantly harder.
+- Using AWS Organizations with Service Control Policies (SCPs) at this stage. While Organizations is the recommended approach at scale - where each team or environment gets its own AWS account, and SCPs act as guardrails across all accounts - it is unnecessary overhead for a 10-person startup operating in a single account. The single-account model with IAM groups and least-privilege policies is the appropriate starting point here.
 
 ---
 
@@ -125,10 +126,10 @@ Recreating the console-based solution as Infrastructure as Code simplifies it in
 
 **What I did**
 - Created four Terraform files to implement the full solution:
-  - `main.tf` — backend and provider configuration, using S3 for remote state storage with S3 native locking.
-  - `iam_groups.tf` — four IAM groups (Developers, Operations, Finance, Data Analysts) with their respective permission policies attached.
-  - `iam_users.tf` — all ten IAM users created and assigned to their respective groups.
-  - `iam_policies.tf` — custom MFA enforcement policy, attached to all groups so every user inherits it.
+  - `main.tf`: backend and provider configuration, using S3 for remote state storage with S3 native locking.
+  - `iam_groups.tf`: four IAM groups (Developers, Operations, Finance, Data Analysts) with their respective permission policies attached.
+  - `iam_users.tf`: all ten IAM users created and assigned to their respective groups.
+  - `iam_policies.tf`: custom MFA enforcement policy, attached to all groups so every user inherits it.
 - Updated `.gitignore` to exclude Terraform-generated files that should not be committed, such as state files, provider binaries, and crash logs.
 
 **Why I did it**
@@ -137,5 +138,27 @@ Recreating the console-based solution as Infrastructure as Code simplifies it in
 - It reduces the risk of human error that comes with manually configuring resources through the console.
 
 **What I rejected**
-- Relying solely on the console implementation — this requires every team member to manually replicate the solution, which is time-consuming, error-prone, and difficult to audit or version control.
-- Using S3 with DynamoDB for state locking — S3 native locking achieves the same result with less infrastructure overhead, eliminating the need to maintain a separate DynamoDB table. This approach requires Terraform 1.10 or above and S3 bucket versioning to be enabled.
+- Relying solely on the console implementation, as this requires every team member to manually replicate the solution, which is time-consuming, error-prone, and difficult to audit or version control.
+- Using S3 with DynamoDB for state locking, as S3 native locking achieves the same result with less infrastructure overhead, eliminating the need to maintain a separate DynamoDB table. This approach requires Terraform 1.10 or above and S3 bucket versioning to be enabled.
+
+---
+
+### 7. Enable AWS GuardDuty: AI Threat Detection Layer
+
+**What this task is solving**
+
+The preventative controls already in place (IAM, least-privilege permissions, and MFA enforcement) reduce the attack surface but cannot detect threats that emerge after access is granted. GuardDuty adds a detective layer by using machine learning to continuously analyse CloudTrail logs, VPC Flow Logs, and DNS logs for anomalous or malicious activity, catching threats that slip through or develop over time.
+
+**What I did**
+- Activated GuardDuty to continuously monitor and identify security threats across all AWS resources in the architecture.
+- Added a screenshot of GuardDuty activated in the console as evidence.
+- Implemented GuardDuty enablement in Terraform via a dedicated `guardduty.tf` file, consistent with the IaC approach taken throughout the project.
+
+**Why I did it**
+- In an environment where AI-driven attacks are becoming more sophisticated, using ML-powered threat detection is no longer optional, it is a security baseline.
+- GuardDuty complements the existing preventative controls by acting as a safety net. If credentials are compromised or an insider threat emerges, GuardDuty can detect the anomalous behaviour and reduce the blast radius of a breach.
+- It requires no agents or additional infrastructure, it works passively in the background, making it low overhead and high value.
+
+**What I rejected**
+- Relying solely on preventative controls without any detective layer, as this leaves the architecture blind to threats that develop after access is granted, which is increasingly inadequate given the pace at which security threats are evolving.
+- Ignoring AI and ML capabilities available natively in AWS, as failing to utilise these tools goes against modern security best practices and leaves a significant gap in the overall security posture.
