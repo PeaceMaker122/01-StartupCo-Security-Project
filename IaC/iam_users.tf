@@ -67,7 +67,7 @@ resource "aws_iam_group_membership" "finance" {
 
 # --- Data Analysts (3 users) ---
 resource "aws_iam_user" "data_analyst_01" {
-  name = "Data-Analyst-01"
+  name = "Data-analyst-01"
 }
 
 resource "aws_iam_user" "data_analyst_02" {

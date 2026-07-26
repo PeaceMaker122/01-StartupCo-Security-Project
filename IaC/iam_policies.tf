@@ -15,8 +15,8 @@
 # -----------------------------------------------------------------------------
 
 resource "aws_iam_policy" "enforce_mfa" {
-  name        = "Enforce-MFA-All-Users"
-  description = "Denies all AWS actions unless the user has authenticated with MFA."
+  name        = "Force-MFA"
+  description = "Force all IAM users to enable MFA before any actions on the AWS account, including resources, can take place."
 
   policy = jsonencode({
     Version = "2012-10-17"

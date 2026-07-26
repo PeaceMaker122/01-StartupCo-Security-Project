@@ -154,6 +154,8 @@ The preventative controls already in place (IAM, least-privilege permissions, an
 - Added a screenshot of GuardDuty activated in the console as evidence.
 - Implemented GuardDuty enablement in Terraform via a dedicated `guardduty.tf` file, consistent with the IaC approach taken throughout the project.
 
+- Sidenote: GuardDuty specified in design but not deployed in this phase due to cost; Terraform config (`guardduty.tf`) reflects target-state architecture, console/import reflects actually-deployed subset.
+
 **Why I did it**
 - In an environment where AI-driven attacks are becoming more sophisticated, using ML-powered threat detection is no longer optional, it is a security baseline.
 - GuardDuty complements the existing preventative controls by acting as a safety net. If credentials are compromised or an insider threat emerges, GuardDuty can detect the anomalous behaviour and reduce the blast radius of a breach.
@@ -162,3 +164,27 @@ The preventative controls already in place (IAM, least-privilege permissions, an
 **What I rejected**
 - Relying solely on preventative controls without any detective layer, as this leaves the architecture blind to threats that develop after access is granted, which is increasingly inadequate given the pace at which security threats are evolving.
 - Ignoring AI and ML capabilities available natively in AWS, as failing to utilise these tools goes against modern security best practices and leaves a significant gap in the overall security posture.
+
+---
+
+### 8. Terraform Import Verification
+
+**What this task is solving**
+
+Ensuring that the Terraform configuration accurately reflects the IAM resources that were originally created in the AWS console. This closes the gap between a theoretically correct IaC design and a verified, production-safe representation of the actual AWS environment.
+
+**What I did**
+- Used Terraform import blocks to reconcile existing AWS IAM resources with the Terraform resource definitions.
+- Worked through the import process one resource at a time and reviewed each Terraform plan diff before proceeding.
+- Verified that the IAM groups, users, policies, and group-policy attachments matched the intended console configuration.
+- Left GuardDuty as a future-ready configuration rather than enabling it in the live account because of the cost decision.
+
+**Why I did it**
+- A security-focused project cannot rely on assumptions alone; the Terraform code needed to be proven against the real AWS environment.
+- Importing existing resources into state prevents drift and ensures Terraform manages the same objects that were created manually in the console.
+- Reviewing each plan diff before applying it made the process safer and more explicit.
+
+**What I rejected**
+- Treating the Terraform configuration as correct just because it looked consistent in code.
+- Using a bulk import or apply approach without reviewing the plan first, which would have reduced visibility and increased the chance of misconfiguration.
+- Enabling GuardDuty in the live account at this stage, because the project scope was intentionally kept cost-conscious and the service was documented as a future enhancement rather than a current deployment.
