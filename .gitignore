@@ -1,9 +1,13 @@
+
 # Docs
+
 docs/project-brief.md
 to do list.md
 terraform resources justification.md
+project_template_v1.md
 
 # Terraform
+
 # State files can contain sensitive data and should never be committed.
 # Remote state is stored in S3 — see backend config in IaC/main.tf.
 *.tfstate
