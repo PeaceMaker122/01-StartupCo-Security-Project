@@ -188,3 +188,33 @@ Ensuring that the Terraform configuration accurately reflects the IAM resources 
 - Treating the Terraform configuration as correct just because it looked consistent in code.
 - Using a bulk import or apply approach without reviewing the plan first, which would have reduced visibility and increased the chance of misconfiguration.
 - Enabling GuardDuty in the live account at this stage, because the project scope was intentionally kept cost-conscious and the service was documented as a future enhancement rather than a current deployment.
+
+---
+
+### 9. Target-State Architecture
+
+**What this task is solving**
+
+Turning the “what exists today” view into a clear future architecture for StartupCo. This makes the gap between the current console-based setup and the security/availability target explicit, instead of leaving it as an abstract improvement idea.
+
+**What I did**
+- Drew the improved target-state architecture after completing the IaC work, rather than before.
+- Expanded the simple current setup into a multi-AZ design with separate public and private subnets.
+- Added an ALB in front of the web tier, private app servers in a non-public subnet, a NAT gateway for outbound access, and a multi-AZ RDS primary/standby pair.
+- Added a decoupled multi-tier architecture with separate Web and Application tiers in different Auto Scaling Groups spanning two Availability Zones.
+- Restricted all public ingress to the ALB in public subnets, while placing backend Web servers, app servers, and database instances in private subnets with outbound-only internet access via NAT Gateways.
+- Included a private S3 gateway endpoint for secure internal S3 access, CloudWatch monitoring, and IAM/authorization controls.
+- Designed layered Security Groups at every tier (ALB -> Web Tier -> App Tier -> Database) to strictly restrict inbound and outbound communication paths.
+- Represented GuardDuty as a future-ready detection layer in the architecture, documented as intentionally not deployed in the live account for cost reasons.
+
+**Why I did it**
+- The target-state diagram should be created after the console/IaC work, once you understand the real limitations of the existing build.
+- It allowed me to separate “what we actually built today” from “what the architecture should evolve into”.
+- Multi-AZ deployment and tiered isolation reduce single points of failure and significantly improve security posture.
+- Routing S3 traffic through a VPC Gateway Endpoint improves privacy and avoids unnecessary NAT Gateway data transfer costs.
+- GuardDuty and CloudWatch integration bridges the gap between preventative controls (IAM/MFA) and detective capabilities, ensuring real-time visibility into anomalous activity.
+
+**What I rejected**
+- Treating the current single-AZ App + RDS view as if it were already the ideal design.
+- Drawing a target-state diagram too early, before the actual build and Terraform reconciliation were complete.
+- Enabling GuardDuty in the live account just to match the diagram; instead, I kept it as a documented future capability and did not apply it due to cost constraints.
