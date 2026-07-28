@@ -22,9 +22,10 @@ This diagram captured the current single-AZ app/RDS topology and exposed the nee
 
 ### 2. Secure the Root Account
 
-- Enabled MFA on the AWS root account.
+- Enabled MFA on the AWS root/management account.
 - Documented root credential storage in an encrypted password manager.
 - Confirmed that access keys are only created for IAM users.
+- Clarified that this account is the governance/control plane and, in an enterprise model, should not be used to host workload IAM users/groups or application infrastructure once AWS Organizations is established.
 
 <img src="screenshots/02-MFA-enabled-on-root-account.png" alt="Root account MFA enabled" width="600" />
 
@@ -180,7 +181,9 @@ This IaC approach makes the solution repeatable, version-controlled, and easier 
 
 ## What I’d Do Differently at Scale
 
-For a larger organization, this project should evolve into a multi-account, modular, and policy-driven platform:
+For a larger organization, this project should evolve into a multi-account, modular, and policy-driven platform.
+
+First, harden the management/root account and use it as the governance account. Then use that account to create member accounts in AWS Organizations, and keep workload IAM users/groups inside those member accounts rather than in the management account.
 
 - Partition the environment using AWS Organizations with separate accounts for prod, dev, security, logging, and shared services.
 - Use federated identity or AWS IAM Identity Center instead of static IAM users in each account.

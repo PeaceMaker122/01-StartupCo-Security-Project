@@ -33,16 +33,19 @@ Establishing a clear visual representation of the current infrastructure to unde
 
 ---
 
-### 2. Secure the Root Account
+### 2. Secure the Root/Management Account
 
 **What this task is solving**
 
-The root account has unrestricted access to all AWS features and services. Leaving it unsecured or using it for daily operations poses a critical security risk that could lead to full account compromise.
+The root/management account has unrestricted access to all AWS features and services. Leaving it unsecured or using it for daily operations poses a critical security risk that could lead to full account compromise.
+
+In an enterprise-grade environment, this account should be reserved for governance, billing, and AWS Organizations administration, not for day-to-day infrastructure or workload IAM management.
 
 **What I did**
-- Enabled MFA on the root account as a mandatory first step.
-- Stored root credentials in a dedicated, encrypted password manager, with access limited to only those who absolutely require it - in line with the principle of least privilege.
+- Enabled MFA on the root/management account as a mandatory first step.
+- Stored root/management credentials in a dedicated, encrypted password manager, with access limited to only those who absolutely require it - in line with the principle of least privilege.
 - Ensured access keys are only attached to IAM users, not the root user.
+- Treated the management account as a hardened control plane, not a standard workload account.
 
 **Why I did it**
 - MFA adds a second layer of protection, meaning stolen credentials alone are not enough to access the account.
@@ -52,6 +55,7 @@ The root account has unrestricted access to all AWS features and services. Leavi
 **What I rejected**
 - Continuing to use the root account for daily operations, its unrestricted access makes any mistake or compromise catastrophic.
 - Skipping MFA on the root account, this is a non-negotiable security baseline for any AWS account.
+- Using the management account as the place to create normal IAM users/groups or application infrastructure when the environment is ready to move to an AWS Organizations-based model.
 
 ---
 
@@ -60,6 +64,8 @@ The root account has unrestricted access to all AWS features and services. Leavi
 **What this task is solving**
 
 Replacing the shared root account with individual IAM users and structured groups ensures that each person only has the access they need, making the environment more secure and easier to manage.
+
+For this phase, those users and groups were created in the current single-account baseline. In an enterprise implementation, the hardening of the root/management account should come first, and IAM users/groups should be created in member accounts under AWS Organizations rather than in the management account.
 
 **What I did**
 - Created individual IAM users for each employee, removing the shared root account access.
@@ -75,6 +81,7 @@ Replacing the shared root account with individual IAM users and structured group
 - Continuing to use the root account for daily operations. The root account has unrestricted access to everything and should not be used for routine tasks.
 - Assigning permissions directly to individual users. This becomes unmanageable at scale and makes auditing significantly harder.
 - Using AWS Organizations with Service Control Policies (SCPs) at this stage. While Organizations is the recommended approach at scale - where each team or environment gets its own AWS account, and SCPs act as guardrails across all accounts - it is unnecessary overhead for a 10-person startup operating in a single account. The single-account model with IAM groups and least-privilege policies is the appropriate starting point here.
+- Using the management account to host workload IAM users/groups once AWS Organizations is available. For an enterprise-ready path, the management account should stay reserved for governance and member-account creation.
 
 ---
 
@@ -246,6 +253,11 @@ Making the current IAM design easier to understand at a glance by turning the gr
 ## 11. What I’d Do Differently at Scale
 
 The repository and the project are currently built as a single-account, startup-friendly implementation, which is the right baseline for this phase. At scale, I would evolve the whole project beyond the current code and documentation shape.
+
+The right sequence is:
+1. Harden the root/management account and use it as the governance account.
+2. Use that account to create and manage AWS Organizations and member accounts.
+3. Create workload IAM users, groups, and resources in the member accounts rather than in the management account.
 
 - I would partition the AWS environment into multiple accounts using AWS Organizations, with clearly separated production, development, security, logging, and shared-services accounts. This reduces blast radius and makes lifecycle management easier.
 - I would move IAM to a centralized federated identity provider or IAM Identity Center, rather than static IAM users in the account. That means no more manually created users in Terraform for day-to-day operations.
