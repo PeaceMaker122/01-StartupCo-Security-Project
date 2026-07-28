@@ -217,4 +217,26 @@ Turning the “what exists today” view into a clear future architecture for St
 **What I rejected**
 - Treating the current single-AZ App + RDS view as if it were already the ideal design.
 - Drawing a target-state diagram too early, before the actual build and Terraform reconciliation were complete.
-- Enabling GuardDuty in the live account just to match the diagram; instead, I kept it as a documented future capability and did not apply it due to cost constraints.
+- Enabling GuardDuty in the live account just to match the diagram; instead, I kept it as a documented future capability (`guardduty.tf`) and did not apply it due to cost constraints.
+
+---
+
+### 10. IAM Structure Diagram
+
+**What this task is solving**
+
+Making the current IAM design easier to understand at a glance by turning the group/user/policy relationships into a simple visual reference.
+
+**What I did**
+- Created an IAM structure diagram that shows each group, its users, and the permissions attached to that group.
+- Included the custom `Force-MFA` policy as a shared enforcement layer across all groups.
+- Kept the diagram aligned with the Terraform implementation so it represents the actual deployed state.
+
+**Why I did it**
+- A diagram helps stakeholders and reviewers quickly verify that the IAM model is role-based and least-privilege.
+- It clarifies that permissions are attached at the group level, not directly to users, which is an important security and maintainability distinction.
+- Keeping the diagram tied to Terraform means it supports the same infrastructure-as-code narrative used elsewhere in the project.
+
+**What I rejected**
+- Creating a separate IAM diagram that doesn’t match the actual Terraform resources. Visual documentation only adds value if it accurately reflects the deployed design.
+- Treating the diagram as a replacement for the code. The diagram is a supplementary reference, not the source of truth.
