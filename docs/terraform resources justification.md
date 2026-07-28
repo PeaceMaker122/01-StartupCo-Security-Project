@@ -1,4 +1,5 @@
-Let me read all the Terraform files to give you a complete answer.Here's the full mapping:
+
+Justification for Terraform resources used in this project. Each resource is justified with reference to the relevant task(s).
 
 ---
 
