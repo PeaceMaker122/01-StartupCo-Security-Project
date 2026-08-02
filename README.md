@@ -4,6 +4,18 @@
 
 StartupCo moved quickly to launch its product, which created a cloud environment with functional infrastructure but weak security controls and inconsistent governance. The current work is about bringing that environment under proper engineering and security discipline, focusing on users, permissions, observable state, threat detection, and Infrastructure as Code.
 
+For the detailed rationale behind each decision, see [docs/decisions.md](docs/decisions.md).
+
+## Video Overview
+
+A short video discussing the `decisions.md`, `README.md`, and the Terraform Import process for this project is available here:
+
+- https://www.loom.com/share/0169d090954b4db380109cc05294215a
+
+Although Task 8 in the `decisions.md` document covers this in more detail, the short version is that I never assumed my Terraform code was correct simply because it looked consistent. Instead, I imported resources sections one at a time and reviewed each plan diff before proceeding, comparing the intended outcome documented in the project decisions, the Terraform IaC code, and the actual live AWS state against one another. 
+
+A clean `Terraform plan` shows that the code accurately describes what is currently running, rather than that it has recreated it.
+
 ## Current State Diagram
 
 The first step was to understand the existing architecture and identify risks in the live environment.
