@@ -8,11 +8,14 @@ For the detailed rationale behind each decision, see [docs/decisions.md](docs/de
 
 ## Video Overview
 
-A short video discussing the `decisions.md`, `README.md`, and the Terraform Import process for this project is available here:
+A short video discussing the `decisions.md`, `README.md`, and the Terraform import process for this project is included below:
 
-- https://www.loom.com/share/0169d090954b4db380109cc05294215a
+<video controls width="800">
+  <source src="Cloud Security Project Decisions and Terraform Verification.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
-Although Task 8 in the `decisions.md` document covers this in more detail, the short version is that I never assumed my Terraform code was correct simply because it looked consistent. Instead, I imported resources sections one at a time and reviewed each plan diff before proceeding, comparing the intended outcome documented in the project decisions, the Terraform IaC code, and the actual live AWS state against one another. 
+Although Task 8 in the `decisions.md` document covers this in more detail, the short version is that I never assumed my Terraform code was correct simply because it looked consistent. Instead, I imported resources sections one at a time and reviewed each plan diff before proceeding, comparing the intended outcome documented in the project decisions, the Terraform IaC code, and the actual live AWS state against one another.
 
 A clean `Terraform plan` shows that the code accurately describes what is currently running, rather than that it has recreated it.
 
